@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset='utf-8'>
+    <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+    <title>Métricas</title>
+    <meta name='viewport' content='width=device-width, initial-scale=1'>
+    <!-- <link rel='stylesheet' type='text/css' media='screen' href='main.css'> -->
+    <!-- <script src='metricas-ml-2.js'></script> -->
+    <script src='metricas-lojahub-2.js'></script>
+    
+    <style>
+        table {
+            font-family: arial, sans-serif;
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+        td,
+        th {
+            border: 1px solid #dddddd;
+            text-align: left;
+            padding: 8px;
+        }
+
+        tr:nth-child(even) {
+            background-color: #dddddd;
+        }
+
+        select {
+            font-size: 18px;
+            border-radius: 5px;
+            border: 2px solid blue;
+            box-shadow: 0px 0px 5px blue;
+        }
+    </style>
+</head>
+
+<body id="app">
+    <div style="display: block; text-align: center; padding: 15px; font-size: 26px;">
+        <select id="select" onchange="trocar(this.value)">
+        </select>
+    </div>
+    <table>
+        <tr>
+            <th>Momento</th>
+            <th>Container</th>
+            <th>CPU</th>
+            <th>Memória Raw</th>
+            <th>Memória em Uso (%)</th>
+        </tr>
+        <tbody id="table">
+
+        </tbody>
+    </table>
+</body>
+<script>
+
+    const select = document.getElementById("select");
+    const table = document.getElementById("table");
+
+    window.onload = function () {
+        for (day in metricas.metricas[0]) {
+            for (container of metricas.metricas[0][day]) {
+                let option = document.createElement("OPTION");
+                let textoption = document.createTextNode(container.container);
+                option.appendChild(textoption);
+                select.appendChild(option);
+            }
+            break;
+        }
+    };
+
+
+
+    const generatorTableRow = (dia, nome, cpu, memoria, memoriaPercent) => {
+        let tr = document.createElement("TR");
+
+        let td = document.createElement("TD");
+        let txt = document.createTextNode(dia);
+        td.appendChild(txt);
+        tr.appendChild(td);
+
+        td = document.createElement("TD");
+        txt = document.createTextNode(nome);
+        td.appendChild(txt);
+        tr.appendChild(td);
+
+        td = document.createElement("TD");
+        txt = document.createTextNode(cpu);
+        if(Number(cpu) > 90){
+            td.style.backgroundColor = "#990000";
+            td.style.color = "#ffffff";
+        }else if(Number(cpu) > 80){
+            td.style.backgroundColor = "#ff0000";
+            td.style.color = "#ffffff";
+        }else if(Number(cpu) > 70){
+            td.style.backgroundColor = "#ff4d4d";
+        }else if(Number(cpu) > 60){
+            td.style.backgroundColor = "#ff6666";
+        }else if(Number(cpu) > 50){
+            td.style.backgroundColor = "#ffb3b3";
+        }else if(Number(cpu) > 40){
+            td.style.backgroundColor = "#ffcccc";
+        }else if(Number(cpu) > 30){
+            td.style.backgroundColor = "#ffe6e6";
+        }
+        td.appendChild(txt);
+        tr.appendChild(td);
+
+        td = document.createElement("TD");
+        txt = document.createTextNode(memoria);
+        td.appendChild(txt);
+        tr.appendChild(td);
+
+        td = document.createElement("TD");
+        txt = document.createTextNode(memoriaPercent);
+        td.appendChild(txt);
+        tr.appendChild(td);
+
+        return tr;
+    }
+
+    const trocar = (x) => {
+        for (i = 0; i < 1000; i++) {
+            trs = table.getElementsByTagName('tr');
+            for (elTr of trs)
+                elTr.remove();
+            trs = table.getElementsByTagName('tr');
+            if (trs)
+                continue
+            break;
+        }
+
+
+        for (const interator in metricas.metricas) {
+            for (const day in metricas.metricas[interator]) {
+                for (container of metricas.metricas[interator][day]) {
+                    if (container.container == x)
+                        table.appendChild(generatorTableRow(day, container.container, container.cpu, container.memory.raw, container.memory.percent));
+                }
+            }
+        }
+    }
+
+
+
+</script>
+
+
+</html>
